@@ -1,30 +1,30 @@
-def pipeline():
-    """
-    Construya un pipeline de Luigi que:
 
-    * Importe los datos xls
-    * Transforme los datos xls a csv
-    * Cree la tabla unica de precios horarios.
-    * Calcule los precios promedios diarios
-    * Calcule los precios promedios mensuales
+"""
+Construya un pipeline de Luigi que:
 
-    En luigi llame las funciones que ya creo.
+* Importe los datos xls
+* Transforme los datos xls a csv
+* Cree la tabla unica de precios horarios.
+* Calcule los precios promedios diarios
+* Calcule los precios promedios mensuales
+
+En luigi llame las funciones que ya creo.
 
 
-    """
+"""
 
-    import luigi 
-    from luigi import Task, LocalTarget
-    import os
-    import pandas as pd
-    from create_data_lake import create_data_lake
-    from ingest_data import ingest_data
-    from transform_data import transform_data
-    from clean_data import clean_data
-    from compute_monthly_prices import compute_monthly_prices
-    from compute_daily_prices import compute_daily_prices
+import luigi 
+from luigi import Task, LocalTarget
+import os
+import pandas as pd
+from create_data_lake import create_data_lake
+from ingest_data import ingest_data
+from transform_data import transform_data
+from clean_data import clean_data
+from compute_monthly_prices import compute_monthly_prices
+from compute_daily_prices import compute_daily_prices
 
-    class Ingest_Transform_Clean_Data(Task):
+class Ingest_Transform_Clean_Data(Task):
         def output(self):
             return LocalTarget("data_lake/cleansed/precios-horarios.csv")
 
@@ -44,7 +44,7 @@ def pipeline():
                 print("Data Lake already exist")
 
 
-    class ComputeDay(Task):
+class ComputeDay(Task):
         def requires (self):
             return Ingest_Transform_Clean_Data()
 
@@ -59,7 +59,7 @@ def pipeline():
                 print(e)
 
 
-    class ComputeMonth(Task):
+class ComputeMonth(Task):
         def requires(self):
             return Ingest_Transform_Clean_Data()
 
@@ -73,7 +73,7 @@ def pipeline():
             except Exception as e:
                 print(e)
 
-    class PipeComputePrices(Task):
+class PipeComputePrices(Task):
 
         def requires(self):
             return [
@@ -81,7 +81,7 @@ def pipeline():
                 ComputeMonth(),
             ]
 
-    if __name__ == "__main__":
+if __name__ == "__main__":
         import doctest
-        pipeline()
+        luigi.run(["PipeComputePrices", "--local-scheduler"])
         doctest.testmod()
