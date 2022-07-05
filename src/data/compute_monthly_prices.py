@@ -16,8 +16,8 @@ def compute_monthly_prices():
     df = pd.read_csv('data_lake/cleansed/precios-horarios.csv')
     df['fecha'] = df[['fecha']].apply(pd.to_datetime)
     df['fecha'] = df['fecha'].dt.to_period('M').dt.to_timestamp()
-    df_M_prom = df.groupby(['fecha']).mean().reset_index()
-    df_M_prom.to_csv('data_lake/business/precios-mensuales.csv', index=False)
+    df_Mes = df.groupby(['fecha']).mean().reset_index()
+    df_Mes.to_csv('data_lake/business/precios-mensuales.csv', index=False)
     print("promedio mensual --> data_lake/business/precios-mensuales.csv")
 
 
