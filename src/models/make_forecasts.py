@@ -22,7 +22,6 @@ def make_forecasts():
     df['weekday'] = pd.to_numeric(df['weekday'])
 
     X = np.array(df['weekday']).reshape(-1, 1)
-    #y = np.array(df['precio']).reshape(-1, 1)
 
     with open('src/models/precios-diarios.pkl', 'rb') as f:
         estimator = pickle.load(f)
